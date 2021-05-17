@@ -112,7 +112,7 @@ const readLinesAsync = util.promisify(lineReader.eachLine);
     console.info("Cleaning Up...");
     await moveFile('openapitools.json', 'api-spec/openapitools.json');
 
-    console.info(`Stub Generation Complete!\n 'cd' into folder 'api-spec/${versionNumber}' and run 'npm start' to start the API mocking and Swagger documentation servers.\n`);
+    console.info(`Stub Generation Complete!\n Run 'npm --prefix 'api-spec/${versionNumber} start' to start the API mocking and Swagger documentation servers.\n`);
 
 })();
 

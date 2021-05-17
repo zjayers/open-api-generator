@@ -1,5 +1,5 @@
 {
-  "name": "open-api-generator",
+  "name": "@zjayers/open-api-generator",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -18,6 +18,9 @@
     "move-file": "^2.0.0",
     "npm-add-script": "^1.1.0",
     "yargs": "^17.0.1"
+  },
+  "bin": {
+    "oapi": "./index.js"
   },
   "description": ""
 }

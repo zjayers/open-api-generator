@@ -112,7 +112,7 @@ const readLinesAsync = util.promisify(lineReader.eachLine);
 
     console.info("Moving / Copying Files...");
     await fsPromises.copyFile(fileName, `api-spec/${versionNumber}/open-api/${fileName}`);
-    await fsPromises.rename(`api-spec/${versionNumber}/ozpen-api/${fileName}`, `api-spec/${versionNumber}/open-api/${fileNameWithVersion}`)
+    await fsPromises.rename(`api-spec/${versionNumber}/open-api/${fileName}`, `api-spec/${versionNumber}/open-api/${fileNameWithVersion}`)
     await moveFile('package.json', `api-spec/${versionNumber}/package.json`);
 
     console.info("Installing NPM Modules. Please Wait...");

@@ -60,6 +60,7 @@ const readLinesAsync = util.promisify(lineReader.eachLine);
     }
 
     const fileNameWithVersion = fileName.replace(extension, `-${versionNumber}${extension}`);
+    const fileNameWithVersionNoExtension = fileNameWithVersion.replace(extension, '');
 
     // Check if file exists
     if (!fs.existsSync(fileName)) {
@@ -84,15 +85,29 @@ const readLinesAsync = util.promisify(lineReader.eachLine);
 
     console.info("Adding NPM Scripts...");
     npmAddScript({ key: "make:swagger", value: `make-dir swagger-stub` })
-    npmAddScript({ key: "make:docs", value: `make-dir html-docs` })
-    npmAddScript({ key: "delete:swagger", value: `rimraf swagger-stub` })
-    npmAddScript({ key: "delete:docs", value: `rimraf html-docs` })
     npmAddScript({ key: "generate:swagger", value: `npm run delete:swagger && npm run make:swagger && openapi-generator-cli generate -i open-api/${fileNameWithVersion} -g nodejs-express-server -o swagger-stub --additional-properties=serverPort=9999` })
+    npmAddScript({ key: "delete:swagger", value: `rimraf swagger-stub` })
+
+    npmAddScript({ key: "make:docs", value: `make-dir html-docs` })
+    npmAddScript({ key: "delete:docs", value: `rimraf html-docs` })
     npmAddScript({ key: "generate:docs", value: `npm run delete:docs && npm run make:docs && openapi-generator-cli generate -i open-api/${fileNameWithVersion} -g html2 -o html-docs` })
-    npmAddScript({ key: "generate", value: 'npm run generate:swagger && npm run generate:docs' })
+
+    npmAddScript({ key: "make:markdown", value: `make-dir markdown-docs` })
+    npmAddScript({ key: "generate:markdown", value: `npm run delete:markdown && npm run make:markdown && widdershins open-api/${fileNameWithVersion} -o markdown-docs/${fileNameWithVersionNoExtension}_dirty.md --omitHeader --expandBody --language_tabs 'javascript:JavaScript' && npm run markdown:prepare` })
+    npmAddScript({ key: "delete:markdown", value: `rimraf markdown-docs` })
+
+    npmAddScript({ key: "markdown:tidy", value: `tidy-markdown < ./markdown-docs/${fileNameWithVersionNoExtension}_dirty.md > ./markdown-docs/${fileNameWithVersionNoExtension}.md` })
+    npmAddScript({ key: "markdown:remove-comments", value: `replace-in-files --string=\"<!-- backwards compatibility -->\" "<!-- Generator: Widdershins v4.0.1 -->" --replacement='' ./markdown-docs/${fileNameWithVersionNoExtension}.md` })
+    npmAddScript({ key: "markdown:remove-empty-links", value: `replace-in-files --string=\"[]()\" --replacement='' markdown-docs/${fileNameWithVersionNoExtension}.md` })
+    npmAddScript({ key: "markdown:remove-aside", value: `replace-in-files --string=\"</aside>\" --replacement='**' markdown-docs/${fileNameWithVersionNoExtension}.md` })
+    npmAddScript({ key: "markdown:replace-warnings", value: `replace-in-files --regex=\"<aside[^>]*>\" --replacement='**' markdown-docs/${fileNameWithVersionNoExtension}.md` })
+    npmAddScript({ key: "markdown:remove-dirty", value: `rimraf markdown-docs/${fileNameWithVersionNoExtension}_dirty.md` })
+    npmAddScript({ key: "markdown:prepare", value: `npm run markdown:tidy && npm run markdown:remove-comments && npm run markdown:remove-empty-links && npm run markdown:remove-aside && npm run markdown:replace-warnings && npm run markdown:remove-dirty` })
+
+    npmAddScript({ key: "generate", value: 'npm run generate:swagger && npm run generate:docs && npm run generate:markdown' })
     npmAddScript({ key: "start:swagger", value: `cd swagger-stub && npm start` })
     npmAddScript({ key: "start:prism", value: `prism mock open-api/${fileNameWithVersion}` })
-    npmAddScript({ key: "start:browser", value: 'npx wait-on http://localhost:9999/api-docs && start http://localhost:9999/api-docs\"' })
+    npmAddScript({ key: "start:browser", value: 'wait-on http://localhost:9999/api-docs && start http://localhost:9999/api-docs\"' })
     npmAddScript({ key: "start", value: "concurrently -n swagger,prism,browser \"npm run start:swagger\" \"npm run start:prism\" \"npm run start:browser\"" })
 
     console.info("Moving / Copying Files...");
@@ -112,7 +127,7 @@ const readLinesAsync = util.promisify(lineReader.eachLine);
     console.info("Cleaning Up...");
     await moveFile('openapitools.json', 'api-spec/openapitools.json');
 
-    console.info(`Stub Generation Complete!\n Run 'npm --prefix 'api-spec/${versionNumber} start' to start the API mocking and Swagger documentation servers.\n`);
+    console.info(`Stub Generation Complete!\n Run 'npm --prefix 'api-spec/${versionNumber}' start' to start the API mocking and Swagger documentation servers.\n`);
 
 })();
 

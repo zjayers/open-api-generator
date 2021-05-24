@@ -116,7 +116,7 @@ const readLinesAsync = util.promisify(lineReader.eachLine);
     await moveFile('package.json', `api-spec/${versionNumber}/package.json`);
 
     console.info("Installing NPM Modules. Please Wait...");
-    await exec(`npm --prefix api-spec/${versionNumber} i @openapitools/openapi-generator-cli @stoplight/prism-cli concurrently rimraf make-dir-cli wait-on`);
+    await exec(`npm --prefix api-spec/${versionNumber} i @openapitools/openapi-generator-cli@2.2.8 @stoplight/prism-cli@4.2.3 concurrently@6.1.0 rimraf@3.0.2 make-dir-cli@3.0.0 wait-on@5.3.0 replace-in-files-cli@1.0.0 tidy-markdown@2.0.3 widdershins@4.0.1`);
 
     console.info("Generating Server Stub. Please Wait...");
     await exec(`npm --prefix api-spec/${versionNumber} run generate:swagger`);

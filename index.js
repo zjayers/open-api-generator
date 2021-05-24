@@ -104,7 +104,7 @@ const readLinesAsync = util.promisify(lineReader.eachLine);
     npmAddScript({ key: "markdown:replace-warnings", value: `replace-in-files --regex=\"<aside[^>]*>\" --replacement='**' markdown-docs/${fileNameWithVersionNoExtension}_temp.md` })
     npmAddScript({ key: "markdown:replace-schema-links", value: `replace-in-files --string=\"#schema\" --replacement='#' markdown-docs/${fileNameWithVersionNoExtension}_temp.md` })
     npmAddScript({ key: "markdown:remove-dirty", value: `rimraf markdown-docs/${fileNameWithVersionNoExtension}_dirty.md && rimraf markdown-docs/${fileNameWithVersionNoExtension}_temp.md` })
-    npmAddScript({ key: "markdown:prepare", value: `npm run markdown:tidy :prelim && npm run markdown:remove-comments && npm run markdown:remove-empty-links && npm run markdown:remove-aside && npm run markdown:replace-warnings && npm run markdown:replace-schema-links && npm run markdown:tidy:final && npm run markdown:remove-dirty` })
+    npmAddScript({ key: "markdown:prepare", value: `npm run markdown:tidy:prelim && npm run markdown:remove-comments && npm run markdown:remove-empty-links && npm run markdown:remove-aside && npm run markdown:replace-warnings && npm run markdown:replace-schema-links && npm run markdown:tidy:final && npm run markdown:remove-dirty` })
 
     npmAddScript({ key: "generate", value: 'npm run generate:swagger && npm run generate:docs && npm run generate:markdown' })
     npmAddScript({ key: "start:swagger", value: `cd swagger-stub && npm start` })
